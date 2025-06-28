@@ -3,19 +3,10 @@ import { useState } from 'react';
 import { Heart, User, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-
-interface Movie {
-  id: number;
-  title: string;
-  overview: string;
-  poster_path: string;
-  release_date: string;
-  vote_average: number;
-  vote_count: number;
-}
+import { tmdbApi, TMDBMovie } from '@/services/tmdbApi';
 
 interface MovieCardProps {
-  movie: Movie;
+  movie: TMDBMovie;
 }
 
 export const MovieCard = ({ movie }: MovieCardProps) => {
@@ -23,11 +14,21 @@ export const MovieCard = ({ movie }: MovieCardProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   const formatDate = (dateString: string) => {
+    if (!dateString) return 'N/A';
     return new Date(dateString).getFullYear();
   };
 
   const formatRating = (rating: number) => {
     return rating.toFixed(1);
+  };
+
+  const formatVoteCount = (count: number) => {
+    if (count >= 1000000) {
+      return `${(count / 1000000).toFixed(1)}M`;
+    } else if (count >= 1000) {
+      return `${(count / 1000).toFixed(1)}K`;
+    }
+    return count.toString();
   };
 
   return (
@@ -39,7 +40,7 @@ export const MovieCard = ({ movie }: MovieCardProps) => {
             <div className="absolute inset-0 bg-slate-700 animate-pulse" />
           )}
           <img
-            src={movie.poster_path}
+            src={tmdbApi.getImageUrl(movie.poster_path)}
             alt={movie.title}
             className={`w-full h-full object-cover transition-opacity duration-300 ${
               imageLoaded ? 'opacity-100' : 'opacity-0'
@@ -53,7 +54,7 @@ export const MovieCard = ({ movie }: MovieCardProps) => {
               variant="outline"
               className="border-white text-white hover:bg-white hover:text-black"
             >
-              View Details
+              Προβολή Λεπτομερειών
             </Button>
           </div>
 
@@ -87,12 +88,12 @@ export const MovieCard = ({ movie }: MovieCardProps) => {
             </span>
             <span className="flex items-center">
               <User className="h-4 w-4 mr-1" />
-              {(movie.vote_count / 1000000).toFixed(1)}M votes
+              {formatVoteCount(movie.vote_count)} ψήφοι
             </span>
           </div>
 
           <p className="text-slate-300 text-sm line-clamp-3 leading-relaxed">
-            {movie.overview}
+            {movie.overview || 'Δεν διατίθεται περιγραφή για αυτή την ταινία.'}
           </p>
 
           <div className="mt-4 flex space-x-2">
@@ -100,7 +101,7 @@ export const MovieCard = ({ movie }: MovieCardProps) => {
               size="sm" 
               className="flex-1 bg-blue-600 hover:bg-blue-700"
             >
-              Add to Watchlist
+              Προσθήκη στη Λίστα
             </Button>
           </div>
         </CardContent>
