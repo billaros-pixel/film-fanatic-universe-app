@@ -1,87 +1,75 @@
 
 import { useState } from 'react';
-import { Search, Film, Heart, User, Menu, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Menu, X, Film, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { UserMenu } from '@/components/auth/UserMenu';
 
 export const Navigation = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <nav className="bg-slate-900/95 backdrop-blur-sm border-b border-slate-800 sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2">
             <Film className="h-8 w-8 text-blue-500" />
-            <span className="text-2xl font-bold text-white">CinemaHub</span>
-          </div>
+            <span className="text-xl font-bold text-white">MovieApp</span>
+          </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <a href="#" className="text-slate-300 hover:text-white transition-colors">
-              Discover
-            </a>
-            <a href="#" className="text-slate-300 hover:text-white transition-colors">
-              Movies
-            </a>
-            <a href="#" className="text-slate-300 hover:text-white transition-colors">
-              TV Shows
-            </a>
-            <a href="#" className="text-slate-300 hover:text-white transition-colors">
-              My Lists
-            </a>
-          </div>
-
-          {/* Right side buttons */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" size="icon" className="text-slate-300 hover:text-white">
-              <Search className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon" className="text-slate-300 hover:text-white">
-              <Heart className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon" className="text-slate-300 hover:text-white">
-              <User className="h-5 w-5" />
-            </Button>
+          <div className="hidden md:flex items-center space-x-6">
+            <Link 
+              to="/" 
+              className="text-slate-300 hover:text-white transition-colors"
+            >
+              Αρχική
+            </Link>
+            <Link 
+              to="/watchlist" 
+              className="flex items-center text-slate-300 hover:text-white transition-colors"
+            >
+              <Heart className="h-4 w-4 mr-1" />
+              Η Λίστα μου
+            </Link>
+            <UserMenu />
           </div>
 
           {/* Mobile menu button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden text-white"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </Button>
+          <div className="md:hidden">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsOpen(!isOpen)}
+              className="text-white"
+            >
+              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </Button>
+          </div>
         </div>
 
-        {/* Mobile menu */}
-        {isMenuOpen && (
-          <div className="md:hidden border-t border-slate-800 py-4">
+        {/* Mobile Navigation */}
+        {isOpen && (
+          <div className="md:hidden py-4 border-t border-slate-800">
             <div className="flex flex-col space-y-4">
-              <a href="#" className="text-slate-300 hover:text-white transition-colors">
-                Discover
-              </a>
-              <a href="#" className="text-slate-300 hover:text-white transition-colors">
-                Movies
-              </a>
-              <a href="#" className="text-slate-300 hover:text-white transition-colors">
-                TV Shows
-              </a>
-              <a href="#" className="text-slate-300 hover:text-white transition-colors">
-                My Lists
-              </a>
-              <div className="flex items-center space-x-4 pt-4 border-t border-slate-800">
-                <Button variant="ghost" size="icon" className="text-slate-300 hover:text-white">
-                  <Search className="h-5 w-5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="text-slate-300 hover:text-white">
-                  <Heart className="h-5 w-5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="text-slate-300 hover:text-white">
-                  <User className="h-5 w-5" />
-                </Button>
+              <Link 
+                to="/" 
+                className="text-slate-300 hover:text-white transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                Αρχική
+              </Link>
+              <Link 
+                to="/watchlist" 
+                className="flex items-center text-slate-300 hover:text-white transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                <Heart className="h-4 w-4 mr-2" />
+                Η Λίστα μου
+              </Link>
+              <div className="pt-2">
+                <UserMenu />
               </div>
             </div>
           </div>

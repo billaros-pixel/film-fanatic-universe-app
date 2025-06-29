@@ -1,17 +1,19 @@
 
 import { useState } from 'react';
-import { Heart, User, Calendar } from 'lucide-react';
+import { Heart, User, Calendar, Plus, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { tmdbApi, TMDBMovie } from '@/services/tmdbApi';
+import { useWatchlist } from '@/hooks/useWatchlist';
 
 interface MovieCardProps {
   movie: TMDBMovie;
 }
 
 export const MovieCard = ({ movie }: MovieCardProps) => {
-  const [isLiked, setIsLiked] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const { addToWatchlist, removeFromWatchlist, isInWatchlist } = useWatchlist();
+  const inWatchlist = isInWatchlist(movie.id);
 
   const formatDate = (dateString: string) => {
     if (!dateString) return 'N/A';
@@ -29,6 +31,14 @@ export const MovieCard = ({ movie }: MovieCardProps) => {
       return `${(count / 1000).toFixed(1)}K`;
     }
     return count.toString();
+  };
+
+  const handleWatchlistToggle = () => {
+    if (inWatchlist) {
+      removeFromWatchlist(movie.id);
+    } else {
+      addToWatchlist(movie);
+    }
   };
 
   return (
@@ -58,16 +68,20 @@ export const MovieCard = ({ movie }: MovieCardProps) => {
             </Button>
           </div>
 
-          {/* Like button */}
+          {/* Watchlist button */}
           <Button
             size="icon"
             variant="ghost"
             className={`absolute top-3 right-3 ${
-              isLiked ? 'text-red-500' : 'text-white'
-            } hover:text-red-500 transition-colors`}
-            onClick={() => setIsLiked(!isLiked)}
+              inWatchlist ? 'text-green-500 bg-green-500/20' : 'text-white'
+            } hover:text-green-500 transition-colors`}
+            onClick={handleWatchlistToggle}
           >
-            <Heart className={`h-5 w-5 ${isLiked ? 'fill-current' : ''}`} />
+            {inWatchlist ? (
+              <Check className="h-5 w-5" />
+            ) : (
+              <Plus className="h-5 w-5" />
+            )}
           </Button>
 
           {/* Rating badge */}
@@ -99,9 +113,24 @@ export const MovieCard = ({ movie }: MovieCardProps) => {
           <div className="mt-4 flex space-x-2">
             <Button 
               size="sm" 
-              className="flex-1 bg-blue-600 hover:bg-blue-700"
+              className={`flex-1 ${
+                inWatchlist 
+                  ? 'bg-green-600 hover:bg-green-700' 
+                  : 'bg-blue-600 hover:bg-blue-700'
+              }`}
+              onClick={handleWatchlistToggle}
             >
-              Προσθήκη στη Λίστα
+              {inWatchlist ? (
+                <>
+                  <Check className="h-4 w-4 mr-2" />
+                  Στη Λίστα
+                </>
+              ) : (
+                <>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Προσθήκη στη Λίστα
+                </>
+              )}
             </Button>
           </div>
         </CardContent>
